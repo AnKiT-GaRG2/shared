@@ -23,6 +23,7 @@ import type {
   ChipColor,
   ChipProps,
   ChipSize,
+  ChipStatus,
   ChipVariant,
   DividerProps,
   IconProps,
@@ -51,8 +52,9 @@ describe('primitives barrel exports', () => {
     const color: ButtonColor = 'primary';
     const size: ButtonSize = 'md';
     const chipProps: ChipProps = { label: 'Production' };
-    const chipColor: ChipColor = 'success';
-    const chipSize: ChipSize = 'small';
+    const chipColor: ChipColor = 'secondary';
+    const chipStatus: ChipStatus = 'success';
+    const chipSize: ChipSize = 'sm';
     const chipVariant: ChipVariant = 'outlined';
     const dividerProps: DividerProps = {};
     const iconProps: IconProps = {};
@@ -67,8 +69,9 @@ describe('primitives barrel exports', () => {
     expect(color).toBe('primary');
     expect(size).toBe('md');
     expect(chipProps).toBeDefined();
-    expect(chipColor).toBe('success');
-    expect(chipSize).toBe('small');
+    expect(chipColor).toBe('secondary');
+    expect(chipStatus).toBe('success');
+    expect(chipSize).toBe('sm');
     expect(chipVariant).toBe('outlined');
     expect(dividerProps).toBeDefined();
     expect(iconProps).toBeDefined();
