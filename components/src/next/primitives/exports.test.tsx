@@ -11,7 +11,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Alert, Box, Button, Divider, Icon, Spinner } from './index';
+import { Alert, Box, Button, Checkbox, Divider, Icon, Spinner } from './index';
 import type {
   AlertProps,
   AlertSeverity,
@@ -20,6 +20,11 @@ import type {
   ButtonProps,
   ButtonSize,
   ButtonVariant,
+  CheckboxColor,
+  CheckboxLabelPosition,
+  CheckboxProps,
+  CheckboxSize,
+  CheckboxStyle,
   DividerProps,
   IconProps,
   SpacingToken,
@@ -31,6 +36,7 @@ describe('primitives barrel exports', () => {
     expect(Alert).toBeDefined();
     expect(Box).toBeDefined();
     expect(Button).toBeDefined();
+    expect(Checkbox).toBeDefined();
     expect(Divider).toBeDefined();
     expect(Icon).toBeDefined();
     expect(Spinner).toBeDefined();
@@ -45,6 +51,11 @@ describe('primitives barrel exports', () => {
     const variant: ButtonVariant = 'solid';
     const color: ButtonColor = 'primary';
     const size: ButtonSize = 'md';
+    const checkboxProps: CheckboxProps = {};
+    const checkboxColor: CheckboxColor = 'primary';
+    const checkboxSize: CheckboxSize = 'md';
+    const checkboxLabelPosition: CheckboxLabelPosition = 'end';
+    const checkboxStyle: CheckboxStyle = {};
     const dividerProps: DividerProps = {};
     const iconProps: IconProps = {};
     const spinnerProps: SpinnerProps = {};
@@ -57,6 +68,11 @@ describe('primitives barrel exports', () => {
     expect(variant).toBe('solid');
     expect(color).toBe('primary');
     expect(size).toBe('md');
+    expect(checkboxProps).toBeDefined();
+    expect(checkboxColor).toBe('primary');
+    expect(checkboxSize).toBe('md');
+    expect(checkboxLabelPosition).toBe('end');
+    expect(checkboxStyle).toBeDefined();
     expect(dividerProps).toBeDefined();
     expect(iconProps).toBeDefined();
     expect(spinnerProps).toBeDefined();
