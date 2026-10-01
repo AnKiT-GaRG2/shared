@@ -12,7 +12,14 @@
 // limitations under the License.
 
 import { createContext } from 'react';
-import type { ComponentType, ReactNode, SVGProps } from 'react';
+import type {
+  ComponentType,
+  ForwardRefExoticComponent,
+  PropsWithoutRef,
+  ReactNode,
+  RefAttributes,
+  SVGProps,
+} from 'react';
 
 import type { AlertProps } from '../primitives/Alert';
 import type { BoxProps } from '../primitives/Box';
@@ -21,19 +28,15 @@ import type { DividerProps } from '../primitives/Divider';
 import type { SpinnerProps } from '../primitives/Spinner';
 import type { SwitchProps } from '../primitives/Switch';
 
+type RefComponent<Props, Element> = ForwardRefExoticComponent<PropsWithoutRef<Props> & RefAttributes<Element>>;
+
 export interface PersesComponents {
   Button: ComponentType<ButtonProps>;
   Alert: ComponentType<AlertProps>;
   Divider: ComponentType<DividerProps>;
   Spinner: ComponentType<SpinnerProps>;
-   * const components: PersesComponents = {
-   *   Alert: MyAlert,
-   *   Box: MyBox,
-   *   Button: MyButton,
-   *   Switch: MySwitch,
-   *   Divider: MyDivider,
-   *   Spinner: MySpinner,
-   * };
+  Box: ComponentType<BoxProps>;
+  Switch: RefComponent<SwitchProps, HTMLElement>;
 }
 
 export interface PersesIcons {
