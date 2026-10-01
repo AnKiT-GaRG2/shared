@@ -18,8 +18,9 @@ import { Button } from './Button';
 import { Divider } from './Divider';
 import { ErrorIcon, InfoIcon, SuccessIcon, WarningIcon } from './Icon';
 import { Spinner } from './Spinner';
+import { TextField } from './TextField';
 
-export const defaultComponents: PersesComponents = { Button, Alert, Box, Divider, Spinner };
+export const defaultComponents: PersesComponents = { Button, Alert, Box, Divider, Spinner, TextField };
 
 export const defaultIcons: PersesIcons = {
   Error: ErrorIcon,
