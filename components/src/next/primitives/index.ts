@@ -18,4 +18,4 @@ export * from './Chip';
 export * from './Divider';
 export * from './Icon';
 export * from './Spinner';
-export type { ColorVariant, Size, Status } from './types';
+export type { ColorVariant, Size, Status, Variant } from './types';
