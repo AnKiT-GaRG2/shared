@@ -16,9 +16,18 @@ import clsx from 'clsx';
 import { forwardRef, useCallback, useId, useState } from 'react';
 import type { CSSProperties, HTMLAttributes, ReactElement, ReactNode, Ref } from 'react';
 
+import { displayProps } from '../system/display';
+import type { DisplayProps } from '../system/display';
+import { sizingProps } from '../system/sizing';
+import type { SizingProps } from '../system/sizing';
+import { spacingProps } from '../system/spacing';
+import type { SpacingProps } from '../system/spacing';
+import { applyStyleProps, compileStyleProps } from '../system/styleProps';
 import type { ColorVariant, Size, Status } from '../types';
 
 import './checkbox.css';
+import '../system/layout.css';
+import '../system/spacing.css';
 
 export type CheckboxColor = ColorVariant | Status;
 export type CheckboxSize = Size;
@@ -43,7 +52,14 @@ export interface CheckboxStyle extends CSSProperties {
   '--perses-checkbox-focus-color'?: string;
 }
 
-export interface CheckboxProps extends Omit<HTMLAttributes<HTMLElement>, 'children' | 'color' | 'onChange' | 'style'> {
+const CHECKBOX_STYLE_PROPS = compileStyleProps([spacingProps, sizingProps, displayProps]);
+
+export interface CheckboxProps
+  extends
+    Omit<HTMLAttributes<HTMLElement>, 'children' | 'color' | 'onChange' | 'style'>,
+    SpacingProps,
+    SizingProps,
+    DisplayProps {
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean, details: CheckboxChangeEventDetails) => void;
@@ -67,6 +83,8 @@ export interface CheckboxProps extends Omit<HTMLAttributes<HTMLElement>, 'childr
 }
 
 interface CheckboxFieldProps {
+  className?: string;
+  style?: CSSProperties;
   control: ReactNode;
   label?: ReactNode;
   description?: ReactNode;
@@ -78,6 +96,8 @@ interface CheckboxFieldProps {
 }
 
 function CheckboxField({
+  className,
+  style,
   control,
   label,
   description,
@@ -91,7 +111,8 @@ function CheckboxField({
 
   return (
     <div
-      className="ps-Checkbox__field"
+      className={clsx('ps-Checkbox__field', className)}
+      style={style}
       data-disabled={presenceAttr(disabled)}
       data-label-position={labelPosition}
       data-size={size}
@@ -114,6 +135,11 @@ function CheckboxField({
   );
 }
 
+/**
+ * Spacing, sizing and display props are responsive. They apply to the outermost element: the field wrapper when a
+ * `label`, `description` or `body` is rendered, otherwise the checkbox control. When you pass a responsive object,
+ * include `default`. Breakpoints with no value fall back to the browser's default, not the component's own styling.
+ */
 export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox(
   {
     checked,
@@ -136,12 +162,15 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
     size = 'md',
     color = 'primary',
     className,
+    style,
     id,
     'aria-describedby': ariaDescribedBy,
-    ...rest
+    ...props
   },
   ref,
 ) {
+  const { className: styleClassName, style: computedStyle, rest } = applyStyleProps(props, CHECKBOX_STYLE_PROPS);
+  const domProps = rest as HTMLAttributes<HTMLElement>;
   const [uncontrolledChecked, setUncontrolledChecked] = useState(defaultChecked);
   const generatedDescriptionId = useId();
   const isControlled = checked !== undefined;
@@ -162,7 +191,7 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
 
   const control = (
     <BaseCheckbox.Root
-      {...rest}
+      {...domProps}
       ref={ref}
       id={id}
       checked={isChecked}
@@ -178,7 +207,8 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
       form={form}
       inputRef={inputRef}
       aria-describedby={resolvedAriaDescribedBy}
-      className={clsx('ps-Checkbox', className)}
+      className={clsx('ps-Checkbox', !hasFieldContent && styleClassName, className)}
+      style={hasFieldContent ? style : { ...computedStyle, ...style }}
       data-checked={presenceAttr(isChecked)}
       data-unchecked={emptyAttr(!isChecked && !indeterminate)}
       data-indeterminate={presenceAttr(indeterminate)}
@@ -201,6 +231,8 @@ export const Checkbox = forwardRef<HTMLElement, CheckboxProps>(function Checkbox
 
   return (
     <CheckboxField
+      className={styleClassName}
+      style={computedStyle}
       control={control}
       label={label}
       description={description}

@@ -82,3 +82,7 @@ export const LongContent: Story = () => (
     />
   </div>
 );
+
+const responsiveMargin = { default: 'xs', md: 'lg' } as const;
+
+export const Responsive: Story = () => <Checkbox label="Resize the viewport" m={responsiveMargin} />;

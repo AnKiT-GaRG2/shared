@@ -14,7 +14,7 @@
  */
 
 @layer perses.components {
-  .ps-Checkbox {
+  :where(.ps-Checkbox) {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -28,19 +28,19 @@
     cursor: pointer;
   }
 
-  .ps-Checkbox[data-size='sm'] {
+  :where(.ps-Checkbox[data-size='sm']) {
     width: var(--perses-spacing-lg);
     height: var(--perses-spacing-lg);
     font-size: var(--perses-font-size-xs);
   }
 
-  .ps-Checkbox[data-size='md'] {
+  :where(.ps-Checkbox[data-size='md']) {
     width: var(--perses-spacing-xl);
     height: var(--perses-spacing-xl);
     font-size: var(--perses-font-size-sm);
   }
 
-  .ps-Checkbox[data-size='lg'] {
+  :where(.ps-Checkbox[data-size='lg']) {
     width: var(--perses-spacing-2xl);
     height: var(--perses-spacing-2xl);
     font-size: var(--perses-font-size-md);
@@ -137,7 +137,7 @@
     content: '−';
   }
 
-  .ps-Checkbox__field {
+  :where(.ps-Checkbox__field) {
     display: inline-flex;
     flex-direction: column;
     gap: var(--perses-spacing-xs);

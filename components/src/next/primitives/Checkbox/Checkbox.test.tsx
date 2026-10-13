@@ -14,6 +14,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createElement, createRef } from 'react';
+import type { CSSProperties } from 'react';
 
 import { Checkbox } from './Checkbox';
 import type { CheckboxStyle } from './Checkbox';
@@ -24,6 +25,8 @@ const TABLE_CHECKBOX_STYLE: CheckboxStyle = {
   '--perses-checkbox-border-color': 'rgb(10, 20, 30)',
   '--perses-checkbox-color': 'rgb(10, 20, 30)',
 };
+const RESPONSIVE_WIDTH = { default: 100, md: 200 };
+const WIDTH_OVERRIDE = { '--ps-width': '50px' } as CSSProperties;
 const handleKeyboardInteraction = (): void => undefined;
 describe('Checkbox', () => {
   it('renders an unchecked checkbox with default variants', () => {
@@ -218,5 +221,34 @@ describe('Checkbox', () => {
     const checkbox = screen.getByTestId('checkbox');
     expect(ref.current).toBe(checkbox);
     expect(checkbox).toHaveAttribute('tabindex', '-1');
+  });
+
+  describe('style props', () => {
+    it('applies style props to the control when there is no field', () => {
+      render(<Checkbox aria-label="Select item" m="md" width={RESPONSIVE_WIDTH} />);
+
+      const checkbox = screen.getByRole('checkbox') as HTMLElement;
+      expect(checkbox).toHaveClass('ps-m', 'ps-width');
+      expect(checkbox.style.getPropertyValue('--ps-width')).toBe('100px');
+      expect(checkbox.style.getPropertyValue('--ps-width-md')).toBe('200px');
+    });
+
+    it('applies style props to the field wrapper when a label is rendered', () => {
+      render(<Checkbox label="Accept" m="md" />);
+
+      const checkbox = screen.getByRole('checkbox');
+      expect(checkbox).not.toHaveClass('ps-m');
+      expect(checkbox.closest('.ps-Checkbox__field')).toHaveClass('ps-m');
+    });
+
+    it('lets the style prop override computed variables', () => {
+      render(<Checkbox aria-label="Select item" width={100} style={WIDTH_OVERRIDE} />);
+      expect(screen.getByRole('checkbox')).toHaveStyle({ '--ps-width': '50px' });
+    });
+
+    it('does not leak style props to the DOM', () => {
+      render(<Checkbox aria-label="Select item" m="sm" />);
+      expect(screen.getByRole('checkbox')).not.toHaveAttribute('m');
+    });
   });
 });
