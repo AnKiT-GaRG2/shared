@@ -14,14 +14,14 @@
  */
 
 @layer perses.components {
-  .ps-TextField {
+  :where(.ps-TextField) {
     display: inline-flex;
     flex-direction: column;
     gap: var(--perses-spacing-xs);
     font-family: var(--perses-font-family);
   }
 
-  .ps-TextField[data-full-width] {
+  :where(.ps-TextField[data-full-width]) {
     display: flex;
     width: 100%;
   }

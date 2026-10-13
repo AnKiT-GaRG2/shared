@@ -14,18 +14,29 @@
 import { Field } from '@base-ui/react/field';
 import clsx from 'clsx';
 import { forwardRef, useId } from 'react';
-import type { CSSProperties, InputHTMLAttributes, ReactNode } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 
-import { responsiveClassName, responsiveStyle } from '../system/responsive';
-import type { Responsive } from '../system/responsive';
+import { displayProps } from '../system/display';
+import type { DisplayProps } from '../system/display';
+import { sizingProps } from '../system/sizing';
+import type { SizingProps } from '../system/sizing';
+import { spacingProps } from '../system/spacing';
+import type { SpacingProps } from '../system/spacing';
+import { applyStyleProps, compileStyleProps } from '../system/styleProps';
 import type { Size, Status } from '../types';
 
 import './textField.css';
-import '../system/responsive.css';
+import '../system/layout.css';
+import '../system/spacing.css';
 
-export type { Breakpoint, Responsive, ResponsiveObject } from '../system/responsive';
+const TEXT_FIELD_STYLE_PROPS = compileStyleProps([spacingProps, sizingProps, displayProps]);
 
-export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'width'> {
+export interface TextFieldProps
+  extends
+    Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'width' | 'height'>,
+    SpacingProps,
+    SizingProps,
+    DisplayProps {
   label?: ReactNode;
   helperText?: ReactNode;
   status?: Status;
@@ -35,10 +46,13 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   rows?: number;
   startAdornment?: ReactNode;
   endAdornment?: ReactNode;
-  width?: Responsive<CSSProperties['width']>;
   'data-testid'?: string;
 }
 
+/**
+ * Spacing, sizing and display props are responsive and apply to the root element. When you pass a responsive object,
+ * include `default`. Breakpoints with no value fall back to the browser's default, not the component's own styling.
+ */
 export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, TextFieldProps>(function TextField(
   {
     label,
@@ -50,7 +64,6 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
     rows,
     startAdornment,
     endAdornment,
-    width,
     className,
     style,
     id,
@@ -62,13 +75,15 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
   const generatedId = useId();
   const inputId = id ?? generatedId;
 
-  const computedStyle: CSSProperties = {};
-  if (typeof width !== 'object') computedStyle.width = width;
-  Object.assign(computedStyle, responsiveStyle('width', width), style);
+  const {
+    className: styleClassName,
+    style: computedStyle,
+    rest: inputProps,
+  } = applyStyleProps(rest, TEXT_FIELD_STYLE_PROPS, style);
 
   return (
     <Field.Root
-      className={clsx('ps-TextField', responsiveClassName('width', width), className)}
+      className={clsx('ps-TextField', styleClassName, className)}
       style={computedStyle}
       data-testid={dataTestId}
       data-size={size}
@@ -90,7 +105,7 @@ export const TextField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Text
           id={inputId}
           className="ps-TextField__input"
           render={multiline ? <textarea rows={rows} /> : undefined}
-          {...rest}
+          {...inputProps}
         />
         {endAdornment && <span className="ps-TextField__adornment ps-TextField__adornment--end">{endAdornment}</span>}
       </div>

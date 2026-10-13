@@ -17,6 +17,7 @@ import userEvent from '@testing-library/user-event';
 import { TextField } from './TextField';
 
 const responsiveWidth = { default: '100%', md: '20rem' };
+const STYLE_OVERRIDE = { width: '99px' };
 
 describe('TextField', () => {
   it('renders an input associated with its label', () => {
@@ -113,17 +114,38 @@ describe('TextField', () => {
     expect(screen.getByTestId('end-icon')).toBeInTheDocument();
   });
 
-  it('applies a plain width as an inline style', () => {
+  it('applies a plain width through a custom property', () => {
     render(<TextField label="Name" width="20rem" data-testid="field" />);
-    expect(screen.getByTestId('field')).toHaveStyle({ width: '20rem' });
+    const root = screen.getByTestId('field');
+    expect(root).toHaveClass('ps-width');
+    expect(root).toHaveStyle({ '--ps-width': '20rem' });
   });
 
-  it('applies responsive width via the responsive class and CSS variables', () => {
+  it('applies responsive width via the style-prop class and CSS variables', () => {
     render(<TextField label="Name" width={responsiveWidth} data-testid="field" />);
     const root = screen.getByTestId('field');
-    expect(root).toHaveClass('ps-responsive-width');
-    expect(root.style.getPropertyValue('--ps-responsive-width-default')).toBe('100%');
-    expect(root.style.getPropertyValue('--ps-responsive-width-md')).toBe('20rem');
+    expect(root).toHaveClass('ps-width');
+    expect(root).toHaveStyle({ '--ps-width': '100%', '--ps-width-md': '20rem' });
+  });
+
+  it('applies spacing and display props to the root', () => {
+    render(<TextField label="Name" m="md" display="block" data-testid="field" />);
+    const root = screen.getByTestId('field');
+    expect(root).toHaveClass('ps-m', 'ps-display');
+    expect(root).toHaveStyle({ '--ps-m': 'var(--perses-spacing-md)', '--ps-display': 'block' });
+  });
+
+  it('merges the style prop and lets it override computed styles', () => {
+    render(<TextField label="Name" width="20rem" style={STYLE_OVERRIDE} data-testid="field" />);
+    expect(screen.getByTestId('field')).toHaveStyle({ width: '99px' });
+  });
+
+  it('does not forward style props to the input', () => {
+    render(<TextField label="Name" m="md" width="20rem" id="x" />);
+    const input = screen.getByLabelText('Name');
+    expect(input).toHaveAttribute('id', 'x');
+    expect(input).not.toHaveAttribute('m');
+    expect(input).not.toHaveAttribute('width');
   });
 
   it('sets data-readonly on the input when readOnly', () => {
