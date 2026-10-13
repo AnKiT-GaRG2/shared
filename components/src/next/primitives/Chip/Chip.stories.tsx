@@ -121,3 +121,13 @@ export const Removable: Story = () => {
   );
 };
 Removable.storyName = 'Removable';
+
+const responsiveWidth = { default: 120, md: 240 };
+const responsiveMargin = { default: 'xs', md: 'lg' } as const;
+
+export const Responsive: Story = () => (
+  <Chip width={responsiveWidth} m={responsiveMargin}>
+    Resize the viewport
+  </Chip>
+);
+Responsive.storyName = 'Responsive';

@@ -14,7 +14,7 @@
  */
 
 @layer perses.components {
-  .ps-Chip {
+  :where(.ps-Chip) {
     display: inline-flex;
     align-items: center;
     gap: var(--perses-spacing-xs);
@@ -29,13 +29,13 @@
     font-weight: var(--perses-font-weight-medium);
   }
 
-  .ps-Chip[data-size='sm'] {
+  :where(.ps-Chip[data-size='sm']) {
     height: 1.5rem;
     padding: var(--perses-spacing-0) var(--perses-spacing-sm);
     font-size: var(--perses-font-size-xs);
   }
 
-  .ps-Chip[data-size='md'] {
+  :where(.ps-Chip[data-size='md']) {
     height: 2rem;
     padding: var(--perses-spacing-0) var(--perses-spacing-md);
     font-size: var(--perses-font-size-sm);

@@ -23,6 +23,9 @@ const customChipStyle: CSSProperties & { '--chip-label-max-width': string } = {
   marginTop: 4,
   '--chip-label-max-width': '20ch',
 };
+const responsiveWidth = { default: 100, md: 200 };
+const responsiveDisplay = { default: 'flex', md: 'inline-flex' } as const;
+const widthOverride = { '--ps-width': '50px' } as CSSProperties;
 const startElement = <svg data-testid="start-element" />;
 const closeIcon = <svg data-testid="close-icon" />;
 
@@ -318,5 +321,41 @@ describe('Chip', () => {
       </Chip>,
     );
     expect(screen.getByTestId('production-chip')).toHaveAttribute('aria-describedby', 'chip-description');
+  });
+
+  describe('style props', () => {
+    it('maps spacing, sizing and display props to classes and variables', () => {
+      render(
+        <Chip p="md" width={responsiveWidth} display={responsiveDisplay}>
+          Production
+        </Chip>,
+      );
+      const chip = screen.getByText('Production').closest('.ps-Chip') as HTMLElement;
+      expect(chip).toHaveClass('ps-p', 'ps-width', 'ps-display');
+      expect(chip.style.getPropertyValue('--ps-width')).toBe('100px');
+      expect(chip.style.getPropertyValue('--ps-width-md')).toBe('200px');
+      expect(chip.style.getPropertyValue('--ps-display')).toBe('flex');
+    });
+
+    it('lets the style prop override computed variables', () => {
+      render(
+        <Chip width={100} style={widthOverride}>
+          Production
+        </Chip>,
+      );
+      expect(screen.getByText('Production').closest('.ps-Chip')).toHaveStyle({ '--ps-width': '50px' });
+    });
+
+    it('keeps maxWidth as the label limit rather than a style prop', () => {
+      render(<Chip maxWidth={120}>Production</Chip>);
+      const chip = screen.getByText('Production').closest('.ps-Chip') as HTMLElement;
+      expect(chip).not.toHaveClass('ps-max-width');
+      expect(chip.style.getPropertyValue('--chip-label-max-width')).toBe('120px');
+    });
+
+    it('does not leak style props to the DOM', () => {
+      render(<Chip m="sm">Production</Chip>);
+      expect(screen.getByText('Production').closest('.ps-Chip')).not.toHaveAttribute('m');
+    });
   });
 });

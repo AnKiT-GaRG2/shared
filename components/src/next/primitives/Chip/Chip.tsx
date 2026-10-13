@@ -23,16 +23,30 @@ import type {
 } from 'react';
 
 import { CloseIcon } from '../Icon/icons/CloseIcon';
+import { displayProps } from '../system/display';
+import type { DisplayProps } from '../system/display';
+import { sizingProps } from '../system/sizing';
+import type { SizingProps } from '../system/sizing';
+import { spacingProps } from '../system/spacing';
+import type { SpacingProps } from '../system/spacing';
+import { applyStyleProps, compileStyleProps } from '../system/styleProps';
 import type { ColorVariant, Size, Status, Variant } from '../types';
 
 // oxlint-disable-next-line import/no-unassigned-import -- CSS is loaded for this component's visual contract.
 import './chip.css';
+import '../system/layout.css';
+import '../system/spacing.css';
 
 export type ChipColor = 'default' | ColorVariant;
 export type ChipSize = Exclude<Size, 'lg'>;
 export type ChipVariant = Exclude<Variant, 'ghost'>;
 
-export interface ChipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'color'> {
+// `maxWidth` keeps its existing meaning (the label's max width), so it is not a style prop here.
+const { maxWidth: _labelMaxWidth, ...chipSizingProps } = sizingProps;
+const CHIP_STYLE_PROPS = compileStyleProps([spacingProps, chipSizingProps, displayProps]);
+
+export interface ChipProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'color'>, SpacingProps, Omit<SizingProps, 'maxWidth'>, DisplayProps {
   color?: ChipColor;
   status?: Status;
   size?: ChipSize;
@@ -54,6 +68,10 @@ function getCloseAriaLabel(children: ReactNode): string {
 
 /**
  * A compact element that represents an input, attribute, or action.
+ *
+ * Spacing, sizing (except `maxWidth`, which limits the label) and display props are responsive and apply to the root.
+ * When you pass a responsive object, include `default`. Breakpoints with no value fall back to the browser's
+ * default, not the component's own styling.
  *
  * Content is provided through `children`. Use `startElement` for a leading
  * icon or avatar, and `onClose` to render a close button. `onClick` and
@@ -91,14 +109,16 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(function Chip(
     maxWidth,
     style,
     className,
-    ...rest
+    ...props
   },
   ref,
 ): ReactElement {
-  const resolvedStyle: (CSSProperties & { '--chip-label-max-width'?: string }) | undefined = useMemo(() => {
-    if (maxWidth === undefined) return style;
-    return { ...style, '--chip-label-max-width': typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth };
-  }, [maxWidth, style]);
+  const { className: styleClassName, style: computedStyle, rest } = applyStyleProps(props, CHIP_STYLE_PROPS, style);
+  const domProps = rest as HTMLAttributes<HTMLDivElement>;
+  const resolvedStyle: (CSSProperties & { '--chip-label-max-width'?: string }) | undefined =
+    maxWidth === undefined
+      ? computedStyle
+      : { ...computedStyle, '--chip-label-max-width': typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth };
 
   const handleClick = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
@@ -152,10 +172,10 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(function Chip(
 
   return (
     <div
-      {...rest}
+      {...domProps}
       {...interactionProps}
       ref={ref}
-      className={clsx('ps-Chip', className)}
+      className={clsx('ps-Chip', styleClassName, className)}
       style={resolvedStyle}
       data-color={color}
       data-status={status}
