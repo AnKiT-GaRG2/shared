@@ -12,52 +12,96 @@
 // limitations under the License.
 
 import type { Story } from '@ladle/react';
+import type { CSSProperties } from 'react';
 
+import { Sample, Stack } from '../../stories/Sample';
 import { Tooltip } from './Tooltip';
 
-export const Basic: Story = () => (
-  <Tooltip title="Helpful text">
-    <button>Hover me</button>
-  </Tooltip>
+const placementsRow: CSSProperties = { display: 'flex', gap: '2rem', justifyContent: 'center', padding: '2rem' };
+const column: CSSProperties = { display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'flex-start' };
+
+const richTitle = (
+  <span>
+    <strong>Bold text</strong> and <em>italic text</em>
+  </span>
 );
+
+const basicCode = `<Tooltip title="Helpful text">
+  <button>Hover me</button>
+</Tooltip>`;
+
+export const Basic: Story = () => (
+  <Stack>
+    <p>
+      <code>Tooltip</code> shows a short popup when its child is hovered or focused. The child is the trigger, so style
+      it directly; use <code>className</code> to style the popup.
+    </p>
+    <Sample title="Minimal usage" code={basicCode}>
+      <Tooltip title="Helpful text">
+        <button>Hover me</button>
+      </Tooltip>
+    </Sample>
+  </Stack>
+);
+Basic.storyName = 'Basic';
+
+const placementsCode = `// placement: 'top' (default) | 'bottom' | 'left' | 'right'
+<Tooltip title="Top tooltip" placement="top"><button>Top</button></Tooltip>
+<Tooltip title="Bottom tooltip" placement="bottom"><button>Bottom</button></Tooltip>
+<Tooltip title="Left tooltip" placement="left"><button>Left</button></Tooltip>
+<Tooltip title="Right tooltip" placement="right"><button>Right</button></Tooltip>`;
+const richCode = `<Tooltip title={<span><strong>Bold text</strong> and <em>italic text</em></span>}>
+  <button>Rich tooltip</button>
+</Tooltip>`;
 
 export const Placements: Story = () => (
-  <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', padding: '4rem' }}>
-    <Tooltip title="Top tooltip" placement="top">
-      <button>Top</button>
-    </Tooltip>
-    <Tooltip title="Bottom tooltip" placement="bottom">
-      <button>Bottom</button>
-    </Tooltip>
-    <Tooltip title="Left tooltip" placement="left">
-      <button>Left</button>
-    </Tooltip>
-    <Tooltip title="Right tooltip" placement="right">
-      <button>Right</button>
-    </Tooltip>
-  </div>
-);
+  <Stack>
+    <Sample title="Placements" code={placementsCode}>
+      <div style={placementsRow}>
+        <Tooltip title="Top tooltip" placement="top">
+          <button>Top</button>
+        </Tooltip>
+        <Tooltip title="Bottom tooltip" placement="bottom">
+          <button>Bottom</button>
+        </Tooltip>
+        <Tooltip title="Left tooltip" placement="left">
+          <button>Left</button>
+        </Tooltip>
+        <Tooltip title="Right tooltip" placement="right">
+          <button>Right</button>
+        </Tooltip>
+      </div>
+    </Sample>
 
-export const RichContent: Story = () => (
-  <Tooltip
-    title={
-      <span>
-        <strong>Bold text</strong> and <em>italic text</em>
-      </span>
-    }
-  >
-    <button>Rich tooltip</button>
-  </Tooltip>
+    <Sample title="Rich content" code={richCode}>
+      <Tooltip title={richTitle}>
+        <button>Rich tooltip</button>
+      </Tooltip>
+    </Sample>
+  </Stack>
 );
+Placements.storyName = 'Variants';
 
-export const NoDelay: Story = () => (
-  <Tooltip title="Instant tooltip" delay={0}>
-    <button>No delay</button>
-  </Tooltip>
-);
+const noDelayCode = `// delay is in milliseconds (default 400)
+<Tooltip title="Instant tooltip" delay={0}><button>No delay</button></Tooltip>`;
+const emptyCode = `// An empty title renders only the child, with no popup
+<Tooltip title=""><button>No tooltip rendered</button></Tooltip>`;
 
-export const EmptyTitle: Story = () => (
-  <Tooltip title="">
-    <button>No tooltip rendered</button>
-  </Tooltip>
+export const States: Story = () => (
+  <Stack>
+    <Sample title="No delay" code={noDelayCode}>
+      <div style={column}>
+        <Tooltip title="Instant tooltip" delay={0}>
+          <button>No delay</button>
+        </Tooltip>
+      </div>
+    </Sample>
+
+    <Sample title="Empty title" code={emptyCode}>
+      <Tooltip title="">
+        <button>No tooltip rendered</button>
+      </Tooltip>
+    </Sample>
+  </Stack>
 );
+States.storyName = 'States';
