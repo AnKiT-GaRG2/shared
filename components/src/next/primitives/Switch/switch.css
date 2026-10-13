@@ -14,14 +14,14 @@
  */
 
 @layer perses.components {
-  .ps-Switch__wrapper {
+  :where(.ps-Switch__wrapper) {
     display: inline-flex;
     align-items: center;
     gap: var(--perses-spacing-sm);
     cursor: pointer;
   }
 
-  .ps-Switch {
+  :where(.ps-Switch) {
     --ps-switch-padding: 2px;
     --ps-switch-thumb-size: 1.125rem;
 

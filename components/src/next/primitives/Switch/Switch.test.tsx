@@ -13,9 +13,13 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { CSSProperties } from 'react';
 
 import type { Size } from '../types';
 import { Switch } from './Switch';
+
+const RESPONSIVE_WIDTH = { default: 100, md: 200 };
+const WIDTH_OVERRIDE = { '--ps-width': '50px' } as CSSProperties;
 
 if (typeof window.PointerEvent === 'undefined') {
   window.PointerEvent = window.MouseEvent as unknown as typeof PointerEvent;
@@ -150,5 +154,34 @@ describe('Switch', () => {
   it('applies a caller-provided id to the visible switch element', () => {
     render(<Switch checked={false} onCheckedChange={() => {}} id="my-switch" />);
     expect(screen.getByRole('switch')).toHaveAttribute('id', 'my-switch');
+  });
+
+  describe('style props', () => {
+    it('applies style props to the switch when there is no label', () => {
+      render(<Switch aria-label="Feature" m="md" width={RESPONSIVE_WIDTH} />);
+
+      const control = screen.getByRole('switch') as HTMLElement;
+      expect(control).toHaveClass('ps-m', 'ps-width');
+      expect(control.style.getPropertyValue('--ps-width')).toBe('100px');
+      expect(control.style.getPropertyValue('--ps-width-md')).toBe('200px');
+    });
+
+    it('applies style props to the label wrapper when a label is rendered', () => {
+      render(<Switch label="Feature" m="md" />);
+
+      const control = screen.getByRole('switch');
+      expect(control).not.toHaveClass('ps-m');
+      expect(control.closest('.ps-Switch__wrapper')).toHaveClass('ps-m');
+    });
+
+    it('lets the style prop override computed variables', () => {
+      render(<Switch aria-label="Feature" width={100} style={WIDTH_OVERRIDE} />);
+      expect(screen.getByRole('switch')).toHaveStyle({ '--ps-width': '50px' });
+    });
+
+    it('does not leak style props to the DOM', () => {
+      render(<Switch aria-label="Feature" m="sm" />);
+      expect(screen.getByRole('switch')).not.toHaveAttribute('m');
+    });
   });
 });

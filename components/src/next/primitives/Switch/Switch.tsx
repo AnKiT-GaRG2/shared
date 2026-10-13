@@ -16,11 +16,27 @@ import clsx from 'clsx';
 import { forwardRef, useId } from 'react';
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 
+import { displayProps } from '../system/display';
+import type { DisplayProps } from '../system/display';
+import { sizingProps } from '../system/sizing';
+import type { SizingProps } from '../system/sizing';
+import { spacingProps } from '../system/spacing';
+import type { SpacingProps } from '../system/spacing';
+import { applyStyleProps, compileStyleProps } from '../system/styleProps';
 import type { Size } from '../types';
 
 import './switch.css';
+import '../system/layout.css';
+import '../system/spacing.css';
 
-export interface SwitchProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange' | 'children' | 'defaultChecked'> {
+const SWITCH_STYLE_PROPS = compileStyleProps([spacingProps, sizingProps, displayProps]);
+
+export interface SwitchProps
+  extends
+    Omit<HTMLAttributes<HTMLElement>, 'onChange' | 'children' | 'defaultChecked'>,
+    SpacingProps,
+    SizingProps,
+    DisplayProps {
   /** Whether the switch is on. Omit and use `defaultChecked` for an uncontrolled switch. */
   checked?: boolean;
   /** The switch's initial state when uncontrolled. Ignored if `checked` is provided. */
@@ -56,6 +72,10 @@ export interface SwitchProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange
  * plus Base UI's own `data-checked`/`data-unchecked`/`data-disabled`/`data-readonly`/
  * `data-required`) so a host application can restyle or replace this primitive.
  *
+ * Spacing, sizing and display props are responsive. They apply to the outermost element: the `<label>` wrapper when
+ * `label` is set, otherwise the switch itself. When you pass a responsive object, include `default`. Breakpoints with
+ * no value fall back to the browser's default, not the component's own styling.
+ *
  * @example
  * // Controlled, no label
  * <Switch checked={enabled} onCheckedChange={setEnabled} />
@@ -79,20 +99,25 @@ export const Switch = forwardRef<HTMLElement, SwitchProps>(function Switch(
     size = 'md',
     label,
     className,
+    style,
     id,
     'aria-labelledby': ariaLabelledBy,
-    ...rest
+    ...props
   },
   ref,
 ): ReactElement {
+  const { className: styleClassName, style: computedStyle, rest } = applyStyleProps(props, SWITCH_STYLE_PROPS);
+  const domProps = rest as HTMLAttributes<HTMLElement>;
   const generatedId = useId();
   const controlId = id ?? generatedId;
   const labelId = `${controlId}-label`;
   const hiddenInputId = `${controlId}-input`;
 
+  const rootStyle = label ? style : { ...computedStyle, ...style };
+
   const root = (
     <BaseSwitch.Root
-      {...rest}
+      {...domProps}
       ref={ref}
       id={hiddenInputId}
       render={<span id={controlId} />}
@@ -108,7 +133,8 @@ export const Switch = forwardRef<HTMLElement, SwitchProps>(function Switch(
       uncheckedValue={uncheckedValue}
       aria-labelledby={ariaLabelledBy ?? (label ? labelId : undefined)}
       data-size={size}
-      className={clsx('ps-Switch', className)}
+      className={clsx('ps-Switch', !label && styleClassName, className)}
+      style={rootStyle}
     >
       <BaseSwitch.Thumb className="ps-Switch__thumb" />
     </BaseSwitch.Root>
@@ -119,7 +145,7 @@ export const Switch = forwardRef<HTMLElement, SwitchProps>(function Switch(
   }
 
   return (
-    <label className="ps-Switch__wrapper" htmlFor={hiddenInputId}>
+    <label className={clsx('ps-Switch__wrapper', styleClassName)} style={computedStyle} htmlFor={hiddenInputId}>
       {root}
       <span id={labelId} className="ps-Switch__label">
         {label}

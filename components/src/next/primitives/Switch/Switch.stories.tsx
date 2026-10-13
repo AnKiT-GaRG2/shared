@@ -67,3 +67,7 @@ export const ControlledToggle: Story = () => {
   );
 };
 ControlledToggle.storyName = 'Controlled Toggle';
+
+const responsiveMargin = { default: 'xs', md: 'lg' } as const;
+
+export const Responsive: Story = () => <Switch label="Resize the viewport" m={responsiveMargin} />;
